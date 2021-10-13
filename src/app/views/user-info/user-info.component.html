@@ -24,7 +24,6 @@
             </p-card>
         </li>
     </ul>
+    <h2 *ngIf="wantedMovies.length <= 0 && !selectedCategory">Please select a category</h2>
+    <h2 *ngIf="wantedMovies.length <= 0 && selectedCategory">You have no faovrites in this category, please select a movie</h2>
 </div>
-
-<h2 *ngIf="wantedMovies.length <= 0 && !selectedCategory">Please select a category</h2>
-<h2 *ngIf="wantedMovies.length <= 0 && selectedCategory">You have no faovrites in this category, please select a movie</h2>
