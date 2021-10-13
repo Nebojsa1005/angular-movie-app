@@ -1,0 +1,26 @@
+<div class="container">
+    <ul class="list-navigation"> 
+        <li *ngFor="let link of links">
+            <a [routerLink]="'/list/' + link.id" class="nav-button">{{ link.name }}</a>
+        </li>
+    </ul>
+    <div class="heading" *ngIf="dbData">
+        <h1>{{ dbData.name }}</h1>
+        <p>{{ dbData.description }}</p>
+    </div>
+    <ul class="card-list">
+        <li *ngFor="let movie of movieList">
+            <p-card>
+                <ng-template pTemplate="header">
+                    <p class="spec">{{ movie.title }}</p>
+                </ng-template>
+                <img [src]="'https://image.tmdb.org/t/p/w300/' + movie.poster_path">
+                <ng-template pTemplate="footer">
+                    <button (click)="goToMovie(movie.id)" class="btn more-btn">More</button>
+                    <button class="btn add-btn" *ngIf="!currentUser?.favoriteMoviesIds || currentUser?.favoriteMoviesIds?.indexOf(movie.id) < 0 ? true : false" (click)="addToFavorites(movie.id)">Add To Favorites</button>
+                    <button class="btn remove-btn" *ngIf="currentUser?.favoriteMoviesIds && currentUser?.favoriteMoviesIds?.indexOf(movie.id) >= 0  ? true : false" (click)="removeFromFavorites(movie.id)" >Remove From Favorites</button>
+                </ng-template>
+            </p-card>
+        </li>
+    </ul>
+</div>

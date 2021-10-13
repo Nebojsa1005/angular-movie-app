@@ -1,0 +1,19 @@
+.container {
+    width  : 100%;
+    padding: 30px;
+}
+
+.heading {
+    padding-left: 30px;
+    width: 50%;
+    margin-bottom: 20px;
+}
+
+.heading h1 {
+    font-size: 3rem;
+    color: white;
+}
+
+.heading p {
+    color: white;
+}

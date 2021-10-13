@@ -1,0 +1,30 @@
+<div class="container">
+    <h1>{{ currentUser?.fullName }}</h1>
+    <h3>{{ currentUser?.email }}</h3>
+    
+    <h1>Category:</h1>
+    <ul class="list-navigation"> 
+        <li *ngFor="let link of links">
+            <button (click)="getUserFavoriteMovies(link.id)" class="nav-button">{{ link.name }}</button>
+        </li>
+    </ul>
+    
+    <a [routerLink]="['/list/1']" [queryParams]="{userId: currentUser?.id}" class="nav-button pull-right">Go Home</a>
+    <ul class="card-list">
+        <li *ngFor="let movie of wantedMovies">
+            <p-card>
+                <ng-template pTemplate="header">
+                    <p class="spec">{{ movie.title }}</p>
+                </ng-template>
+                <img [src]="'https://image.tmdb.org/t/p/w300/' + movie.poster_path">
+                <ng-template pTemplate="footer">
+                    <button (click)="goToMovie(movie.id)" class="btn more-btn">More</button>
+                    <button class="btn remove-btn"(click)="removeFromFavorites(movie.id)">Remove From Favorites</button>
+                </ng-template>
+            </p-card>
+        </li>
+    </ul>
+</div>
+
+<h2 *ngIf="wantedMovies.length <= 0 && !selectedCategory">Please select a category</h2>
+<h2 *ngIf="wantedMovies.length <= 0 && selectedCategory">You have no faovrites in this category, please select a movie</h2>
