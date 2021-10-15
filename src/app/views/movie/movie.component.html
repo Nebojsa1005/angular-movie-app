@@ -1,4 +1,4 @@
-<div class="container" *ngIf="movieDetails">
+<div class="container" *ngFor="let movieDetails of (movieDetails$ | async)">
     <div class="backdrop">
         <img [src]="'https://image.tmdb.org/t/p/w500' + movieDetails.backdrop_path">
     </div>

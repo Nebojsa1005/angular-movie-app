@@ -90,6 +90,9 @@ app-movie .p-card-body {
     margin: 1rem 0;
 }
 
+button {
+    cursor: pointer
+}
 
 .nav-button {
     margin-right: 0.5rem;
@@ -102,6 +105,7 @@ app-movie .p-card-body {
     background: transparent;
     transition: border 0.25s ease;
     cursor: pointer;
+    font-size: 1rem;
 }
 
 .nav-button:hover {

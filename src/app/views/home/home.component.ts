@@ -1,8 +1,7 @@
-import { ThrowStmt } from '@angular/compiler';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { first, take } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { DbData } from 'src/app/interfaces/db-data';
 import { Movie } from 'src/app/interfaces/movie';
 import { MovieLinks } from 'src/app/interfaces/movie-links';
@@ -17,70 +16,55 @@ import { UsersService } from 'src/app/services/users.service';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit ,OnDestroy {
-  getMovieListSub?: Subscription
-  signInUser?: Subscription
   updatedUserSub?: Subscription
+  getUserSub?: Subscription
 
+  isCurrentlyLoggedIn: boolean = false
   links?: MovieLinks[]
-  dbData?: DbData  
+  lsitId = new BehaviorSubject<any>('')  
+  dbData$?: Observable<DbData[]>
   movieList: Movie[] = []
-  currentUser?: any
+  currentUser?: User
 
   constructor(
     private moviesService: MoviesService,
     private usersService: UsersService,
     private route: ActivatedRoute,
     private movieLinkstService: MovieLinksService,
-    private router: Router
   ) { }
 
   
   ngOnInit(): void {
-    this.usersService.currentUser.pipe(first()).subscribe(data => {     
-      if(!data) {
-        this.router.navigate(['/sign-in'])
-      } else {
-        this.links = this.movieLinkstService.links
+    this.links = this.movieLinkstService.links
 
-        const userId = this.route.snapshot.queryParamMap.get('userId')
-        this.usersService.getUser(userId).subscribe(data => {
-          this.currentUser = data        
-        })
-    
-        this.route.params.subscribe(param => {
-          this.getMovieListSub = this.moviesService.getMoviesList(param.id).subscribe(data => {
-            this.dbData = data 
-            this.movieList = data.results           
-          })
-        })
-      }
-    })
+    this.getUserSub = this.usersService.currentUser.subscribe((data => {
+      this.currentUser = data     
+    }))
+
+    this.dbData$ = this.route.params.pipe(
+      switchMap((param) => {
+        return this.moviesService.getMoviesList(param.id)
+      }))
+      
   }
 
   ngOnDestroy() {
-    this.getMovieListSub?.unsubscribe()
     this.updatedUserSub?.unsubscribe()
-    this.signInUser?.unsubscribe()
-  }
-
-  goToMovie(id: number) {
-    this.router.navigate([`/movie`, id])
+    this.getUserSub?.unsubscribe()
   }
 
   addToFavorites(id: number) { 
-    if (!this.currentUser.favoriteMoviesIds) {
-      this.currentUser['favoriteMoviesIds'] = [] 
-    }
-    console.log(this.currentUser);
-    
+    if (!this.currentUser?.favoriteMoviesIds) {
+      this.currentUser!.favoriteMoviesIds = [] 
+    }    
     this.currentUser?.favoriteMoviesIds.push(id)
     this.updatedUserSub = this.usersService.updateUser(this.currentUser).subscribe()
     this.usersService.currentUser.next(this.currentUser)
   }
 
   removeFromFavorites(id: number) {
-    const index = this.currentUser?.favoriteMoviesIds?.indexOf(id)
-    this.currentUser.favoriteMoviesIds?.splice(index, 1)
+    // const index = this.currentUser?.favoriteMoviesIds?.indexOf(id)
+    this.currentUser?.favoriteMoviesIds?.splice(this.currentUser?.favoriteMoviesIds?.indexOf(id), 1)
     this.updatedUserSub = this.usersService.updateUser(this.currentUser).subscribe()
     this.usersService.currentUser.next(this.currentUser)
   }

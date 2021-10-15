@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { UsersService } from './users.service';
+import { map, toArray } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -16,11 +15,11 @@ export class MoviesService {
   ) { }
 
   getMoviesList(id: string) {    
-    return this.http.get<any>(this.listBaseUrl + id + this.apiKey)
+    return this.http.get<any>(this.listBaseUrl + id + this.apiKey).pipe(toArray())
   }
 
   getDetails(id: string) {
-    return this.http.get<any>(`${this.movieDetailsUrl}${id}${this.apiKey}`)
+    return this.http.get<any>(`${this.movieDetailsUrl}${id}${this.apiKey}`).pipe(map(data => [{...data}]))
   }
 }
 

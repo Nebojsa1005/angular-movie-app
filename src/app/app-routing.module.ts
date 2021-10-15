@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CanActivateGuard } from './services/auth-guard.service';
 
 import {HomeComponent} from './views/home/home.component'
 import { MovieComponent } from './views/movie/movie.component';
@@ -16,14 +17,14 @@ const routes: Routes = [
     path: 'sign-up', component: SignUpComponent
   },
   {
-    path: 'list/:id', component: HomeComponent
+    path: 'list/:id', component: HomeComponent, canActivate: [CanActivateGuard]
     
   },
   {
-    path: 'movie/:id', component: MovieComponent 
+    path: 'movie/:id', component: MovieComponent, canActivate: [CanActivateGuard] 
   },
   {
-    path: 'user/:id', component: UserInfoComponent
+    path: 'user/:id', component: UserInfoComponent, canActivate: [CanActivateGuard]
   },
   {
     path: '**', redirectTo: '/list/1', pathMatch: 'full'

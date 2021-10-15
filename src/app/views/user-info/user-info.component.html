@@ -1,3 +1,4 @@
+<button (click)="back()" class="nav-button">Go back</button>
 <div class="container">
     <h1>{{ currentUser?.fullName }}</h1>
     <h3>{{ currentUser?.email }}</h3>
@@ -9,7 +10,7 @@
         </li>
     </ul>
     
-    <a [routerLink]="['/list/1']" [queryParams]="{userId: currentUser?.id}" class="nav-button pull-right">Go Home</a>
+    <a [routerLink]="['/list/1']" class="nav-button pull-right">Go Home</a>
     <ul class="card-list">
         <li *ngFor="let movie of wantedMovies">
             <p-card>
@@ -18,7 +19,7 @@
                 </ng-template>
                 <img [src]="'https://image.tmdb.org/t/p/w300/' + movie.poster_path">
                 <ng-template pTemplate="footer">
-                    <button (click)="goToMovie(movie.id)" class="btn more-btn">More</button>
+                    <a [routerLink]="['/movie', movie.id]" class="btn more-btn">More</a>
                     <button class="btn remove-btn"(click)="removeFromFavorites(movie.id)">Remove From Favorites</button>
                 </ng-template>
             </p-card>

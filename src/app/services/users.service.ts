@@ -11,7 +11,7 @@ import { AuthService } from './auth.service';
 export class UsersService {
 
   currentUser = new BehaviorSubject<any>(null)
-  currentToken: any
+  currentToken?: string
 
   baseUrl: string = 'https://angular-movie-app-a61c9-default-rtdb.firebaseio.com/users.json?auth='
   listBaseUrl: string = 'https://api.themoviedb.org/4/list/'

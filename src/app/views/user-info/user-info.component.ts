@@ -1,11 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import {  Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { first } from 'rxjs/operators';
 import { MovieLinks } from 'src/app/interfaces/movie-links';
 import { User } from 'src/app/interfaces/user';
 import { MovieLinksService } from 'src/app/services/movie-links.service';
 import { UsersService } from 'src/app/services/users.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-user-info',
@@ -19,18 +18,16 @@ export class UserInfoComponent implements OnInit, OnDestroy {
   selectedCategory: boolean = false
 
   updatedUserSub?: Subscription
+  currentUserSub?: Subscription
 
   constructor(
     private usersService: UsersService,
     private movieLinksService: MovieLinksService,
-    private router: Router
+    private location: Location
   ) { }
 
   ngOnInit(): void {
-    this.usersService.currentUser.pipe(first()).subscribe(data => {
-      if (!data) {
-        this.router.navigate(['sign-in'])
-      }
+    this.currentUserSub = this.usersService.currentUser.subscribe(data => {
       this.currentUser = data
     })
 
@@ -40,19 +37,18 @@ export class UserInfoComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.updatedUserSub?.unsubscribe()
+    this.currentUserSub?.unsubscribe()
+  }
+
+  back() {
+    this.location.back()
   }
 
   getUserFavoriteMovies(linkId: string) {    
     this.selectedCategory = true  
     this.usersService.getUserFavoriteMovies({linkId, user: this.currentUser}).subscribe((data:any) => {  
-      this.wantedMovies = data
-      console.log(this.wantedMovies);
-      
+      this.wantedMovies = data     
     })
-  }
-
-  goToMovie(id: string) {
-    this.router.navigate([`/movie`, id])
   }
 
   removeFromFavorites(id: number) {
