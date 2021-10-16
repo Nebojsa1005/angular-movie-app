@@ -1,0 +1,18 @@
+<div class="container">
+    <h1>Sign in</h1>
+    <form [formGroup]="formGroup" (ngSubmit)="submit()">
+        <div class="input-group">
+            <label for="email">Email: </label>
+            <input type="email" formControlName="email" class="p-inputtext-sm" pInputText id="email">
+            <span class="error-message" *ngIf="formGroup.get('email')?.errors?.required && formGroup.get('email')?.touched">This filed is required</span>
+            <span class="error-message" *ngIf="formGroup.get('email')?.errors?.email && formGroup.get('email')?.touched">Must be a valid email address</span>
+        </div>
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" pPassword  formControlName="password" [feedback]="false"/>
+            <span class="error-message" *ngIf="formGroup.get('password')?.errors?.minlength && formGroup.get('password')?.touched">Must be at least 6 characters long</span>
+            <span class="error-message" *ngIf="formGroup.get('password')?.errors?.required && formGroup.get('password')?.touched">This field is required</span>
+        </div>
+        <button type="submit" [ngClass]="{'disabled': formGroup.invalid}" [disabled]="formGroup.invalid">Sign In</button>
+    </form>
+</div>

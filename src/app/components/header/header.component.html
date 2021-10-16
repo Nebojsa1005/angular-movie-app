@@ -1,0 +1,12 @@
+<nav class="p-grid">
+    <a [routerLink]="['/']" [queryParams]="{userId: currentUser?.id}"><i class="logo fas fa-file-video"></i></a>
+    <div class="buttons" *ngIf="!currentUser">
+        <a routerLink="/sign-up">Sign Up</a>
+        <a routerLink="/sign-in">Sign In</a>
+    </div>
+    <div class="buttons" *ngIf="currentUser">
+        <a [routerLink]="'/user/' + currentUser.id">{{ currentUser?.fullName }}</a>
+        <a routerLink="/sign-up" (click)="signOut()">Sign Out</a>
+    </div>
+
+</nav>
