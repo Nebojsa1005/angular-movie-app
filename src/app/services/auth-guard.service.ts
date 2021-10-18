@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { UsersService } from './users.service';
 
 @Injectable({
@@ -15,18 +16,8 @@ export class CanActivateGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
-    let result = false
-    this.usersService.currentUser.subscribe(data => {
-      if (data) {
-        result = true
-      } else {
-        this.router.navigate(['/sign-in'])
-      }
-    })
-    return result
+  ): Observable<boolean | UrlTree> {
+    return this.usersService.isLoggedIn$!.pipe(map(loggedIn => loggedIn ? true : this.router.parseUrl('/sign-in')))
   }
 }
-{
 
-}

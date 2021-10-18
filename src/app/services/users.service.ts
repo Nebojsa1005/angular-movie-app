@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { exhaustMap, map, take } from 'rxjs/operators';
 import { User } from '../interfaces/user';
 import { AuthService } from './auth.service';
@@ -11,7 +11,11 @@ import { AuthService } from './auth.service';
 export class UsersService {
 
   currentUser = new BehaviorSubject<any>(null)
+  currentUser$: Observable<any> = this.currentUser.asObservable()
   currentToken?: string
+
+  isLoggedIn$?: Observable<boolean>
+  isLoggedOut$?: Observable<boolean>
 
   baseUrl: string = 'https://angular-movie-app-a61c9-default-rtdb.firebaseio.com/users.json?auth='
   listBaseUrl: string = 'https://api.themoviedb.org/4/list/'
@@ -22,7 +26,10 @@ export class UsersService {
   constructor(
     private http: HttpClient,
     private authService: AuthService,    
-  ) { }
+  ) {
+    this.isLoggedIn$ = this.currentUser$.pipe(map(user => !!user))
+    this.isLoggedOut$ = this.isLoggedIn$?.pipe(map(loggedIn => !loggedIn))
+   }
 
   storeUser(data:any) {    
     
