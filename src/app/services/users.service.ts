@@ -11,8 +11,11 @@ import { AuthService } from './auth.service';
 export class UsersService {
 
   currentUser = new BehaviorSubject<any>(null)
-  user$ = this.currentUser.asObservable()
+  currentUser$: Observable<any> = this.currentUser.asObservable()
   currentToken?: string
+
+  isLoggedIn$?: Observable<boolean>
+  isLoggedOut$?: Observable<boolean>
 
   baseUrl: string = 'https://angular-movie-app-a61c9-default-rtdb.firebaseio.com/users.json?auth='
   listBaseUrl: string = 'https://api.themoviedb.org/4/list/'
@@ -20,26 +23,23 @@ export class UsersService {
   afterAuthUrl: string = 'https://angular-movie-app-a61c9-default-rtdb.firebaseio.com/users/'
   apiKey: string = '?api_key=0f0f45efef6bdd14d1de380408bd937d'
 
-  isLoggedIn$?: Observable<boolean>
-  isLoggedOut$?: Observable<boolean>
-
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,    
   ) {
-    this.isLoggedIn$ = this.user$.pipe(map(user => !!user))
-    this.isLoggedOut$ = this.isLoggedIn$.pipe(map(isLoggedIn => !isLoggedIn))
-  }
+    this.isLoggedIn$ = this.currentUser$.pipe(map(user => !!user))
+    this.isLoggedOut$ = this.isLoggedIn$?.pipe(map(loggedIn => !loggedIn))
+   }
 
-  storeUser(data: any) {
-
+  storeUser(data:any) {    
+    
     return this.authService.signUpUser({
       email: data.email,
       password: data.password
     }).pipe(exhaustMap(user => {
-      this.currentToken = user.idToken
+      this.currentToken = user.idToken     
       this.currentUser.next(user)
-
+       
       return this.http.post<any>(this.baseUrl + this.currentToken, data)
     }))
   }
@@ -49,8 +49,8 @@ export class UsersService {
       let formatedUser = {
         ...user,
         id: data
-      }
-      this.currentUser.next(formatedUser)
+      }    
+      this.currentUser.next(formatedUser) 
       return formatedUser
     }))
   }
@@ -60,24 +60,24 @@ export class UsersService {
       this.currentToken = user.idToken
       return this.http.get<any>(`${this.afterAuthUrl}.json?auth=${this.currentToken}`)
     }))
-  }
+  } 
 
-  updateUser(user: User) {
+  updateUser(user: any) {    
     return this.http.put<any>(`${this.afterAuthUrl}/${user.id}.json?auth=${this.currentToken}`, user)
   }
 
-  getUserFavoriteMovies(data: any) {
-    return this.http.get<any>(this.listBaseUrl + data.linkId + this.apiKey).pipe(map(listData => {
-      let wantedMoviesIds: any = []
+  getUserFavoriteMovies(data: any) {    
+    return this.http.get<any>(this.listBaseUrl + data.linkId + this.apiKey).pipe(map(listData => {                        
+      let wantedMoviesIds: any = []      
       listData.results.forEach((movie: any) => {
         if (data.user.favoriteMoviesIds) {
-          data.user.favoriteMoviesIds.forEach((favoriteMovie: any) => {
+          data.user.favoriteMoviesIds.forEach((favoriteMovie:any) => {                    
             if (movie.id === favoriteMovie) {
               wantedMoviesIds.push(movie)
             }
           })
         }
-      })
+      })            
       return wantedMoviesIds
     }))
   }
